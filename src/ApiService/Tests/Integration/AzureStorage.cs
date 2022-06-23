@@ -36,10 +36,12 @@ sealed class AzureStorage : IStorage {
     public Task<(string?, string?)> GetStorageAccountNameAndKey(string accountId)
         => Async.Task.FromResult((AccountName, AccountKey));
 
-    public IEnumerable<string> GetAccounts(StorageType storageType) {
+    public IReadOnlyList<string> GetAccounts(StorageType storageType) {
         if (AccountName != null) {
-            yield return AccountName;
+            return new[] { AccountName };
         }
+
+        return Array.Empty<string>();
     }
 
     public Uri GetTableEndpoint(string accountId)
@@ -51,7 +53,7 @@ sealed class AzureStorage : IStorage {
     public Uri GetBlobEndpoint(string accountId)
         => new($"https://{AccountName}.blob.core.windows.net/");
 
-    public IEnumerable<string> CorpusAccounts() {
+    public IReadOnlyList<string> CorpusAccounts() {
         throw new System.NotImplementedException();
     }
 

@@ -11,7 +11,7 @@ public enum StorageType {
 }
 
 public interface IStorage {
-    public IEnumerable<string> CorpusAccounts();
+    public IReadOnlyList<string> CorpusAccounts();
     string GetPrimaryAccount(StorageType storageType);
 
     public Uri GetTableEndpoint(string accountId);
@@ -24,7 +24,7 @@ public interface IStorage {
 
     public Async.Task<string?> GetStorageAccountNameAndKeyByName(string accountName);
 
-    public IEnumerable<string> GetAccounts(StorageType storageType);
+    public IReadOnlyList<string> GetAccounts(StorageType storageType);
 }
 
 public class Storage : IStorage {
@@ -55,7 +55,7 @@ public class Storage : IStorage {
     }
 
     // TODO: @cached
-    public IEnumerable<string> CorpusAccounts() {
+    public IReadOnlyList<string> CorpusAccounts() {
         var skip = GetFuncStorage();
         var results = new List<string> { GetFuzzStorage() };
 
@@ -139,7 +139,7 @@ public class Storage : IStorage {
         return account_list[index];  // nosec
     }
 
-    public IEnumerable<string> GetAccounts(StorageType storageType) {
+    public IReadOnlyList<string> GetAccounts(StorageType storageType) {
         switch (storageType) {
             case StorageType.Corpus:
                 return CorpusAccounts();

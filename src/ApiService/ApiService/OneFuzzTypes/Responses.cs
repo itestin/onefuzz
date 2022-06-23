@@ -54,6 +54,17 @@ public record InfoVersion(
     string Build,
     string Version);
 
+public record ContainerInfoBase(
+    Container Name,
+    IDictionary<string, string>? Metadata
+) : BaseResponse();
+
+public record ContainerInfo(
+    Container Name,
+    IDictionary<string, string>? Metadata,
+    Uri SasUrl
+) : BaseResponse();
+
 public class BaseResponseConverter : JsonConverter<BaseResponse> {
     public override BaseResponse? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
         return null;
