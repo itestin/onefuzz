@@ -4,6 +4,7 @@ using Azure;
 using Azure.ResourceManager;
 using Azure.Storage;
 using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using Azure.Storage.Sas;
 
 namespace Microsoft.OneFuzz.Service;
@@ -108,7 +109,8 @@ public class Containers : IContainers {
             throw new InvalidOperationException($"Unable to get blob service for {account}");
         }
 
-        var cc = client.GetBlobContainerClient(container.ContainerName);
+        var containerName = _config.OneFuzzStoragePrefix + container.ContainerName;
+        var cc = client.GetBlobContainerClient(containerName);
         try {
             await cc.CreateAsync(metadata: metadata);
         } catch (RequestFailedException ex) when (ex.ErrorCode == "ContainerAlreadyExists") {
@@ -252,7 +254,7 @@ public class Containers : IContainers {
 
         var sasBuilder = new BlobSasBuilder(permissions, endTime) {
             StartsOn = startTime,
-            BlobContainerName = container.ContainerName,
+            BlobContainerName = _config.OneFuzzStoragePrefix + container.ContainerName,
         };
 
         var sasUrl = client.GenerateSasUri(sasBuilder);
@@ -273,7 +275,7 @@ public class Containers : IContainers {
                  throw new InvalidOperationException($"unable to get blob service for account {acc}");
              }
 
-             return await service.GetBlobContainersAsync().Select(container =>
+             return await service.GetBlobContainersAsync(BlobContainerTraits.Metadata).Select(container =>
                 KeyValuePair.Create(container.Name, container.Properties.Metadata)).ToListAsync();
          }));
 
